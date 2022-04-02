@@ -38,7 +38,7 @@ add_subdirectory(third_party/oscpack)
 ##########################################
 ## Library
 set(LIB_SRC_FILES
-	vmc_godot/vmc_godot_impl.cpp
+	vmc_godot/vmc_godot.cpp
 	vmc_godot/vmc_receiver.cpp
 	vmc_godot/vmc_packets.cpp
 )

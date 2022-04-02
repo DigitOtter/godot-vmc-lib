@@ -9,7 +9,6 @@
 #include <functional>
 #include <osc/OscReceivedElements.h>
 
-#include "singleton.h"
 #include "vmc_packets.h"
 
 
@@ -42,8 +41,8 @@ class VmcReceiver
 		// New Blend shapes. Apply after receiving BLEND_SHAPES_APPLY
 		godot::Dictionary _godotNewBlendShapes;
 
-		std::string _address;
-		uint16_t    _port;
+		std::string    _address;
+		uint16_t       _port;
 		IpEndpointName _endpoint;
 
 		std::mutex  _lockOscBuffer;
