@@ -1,3 +1,6 @@
 [submodule "third_party/oscpack"]
 	path = third_party/oscpack
 	url = https://github.com/DigitOtter/oscpack
+[submodule "third_party/godot-cpp"]
+	path = third_party/godot-cpp
+	url = https://github.com/godotengine/godot-cpp
