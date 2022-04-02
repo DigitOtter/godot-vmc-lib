@@ -173,15 +173,9 @@ void VmcReceiver::ProcessOSCBundle(const osc::ReceivedBundle &bundle)
 
 void VmcReceiver::ProcessOSCMessage(const osc::ReceivedMessage &msg)
 {
+	// Try to process message as vmc. If not possible, add msg data to _godotOtherData
 	if(!this->ProcessVMC(msg))
-	{
-//		const auto warnMsg = std::string("OSC Message for '") + msg.AddressPattern() + "' not processed";
-//		godot::Godot::print(warnMsg.data());
-
 		this->ProcessOSCUnknown(msg);
-	}
-
-	// TODO: Add msg to some default dict if no VMC processor was found
 }
 
 godot::Variant VmcReceiver::ConvertOSCData(const osc::ReceivedMessage::const_iterator &data)
