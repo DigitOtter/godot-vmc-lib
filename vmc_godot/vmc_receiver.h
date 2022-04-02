@@ -56,17 +56,21 @@ class VmcReceiver
 		std::future<void> _udpThread;
 		volatile bool _udpThreadBreak = false;
 
+		// Godot Interface for _address
 		void SetAddr(godot::String addr);
 		godot::String GetAddr();
 
+		// Godot Interface for _port
 		void SetPort(uint16_t port);
 		uint16_t GetPort();
 
+		// OSC Network Receiver
 		void ChangeEndpoint(const std::string &ip, uint16_t port);
 		void UDPThread();
 		void StartUDPServerThread();
 		void StopUDPServerThread();
 
+		// Porcess received osc messages
 		void ProcessOSCBundle(const osc::ReceivedBundle &bundle);
 		void ProcessOSCMessage(const osc::ReceivedMessage &msg);
 

@@ -47,7 +47,7 @@ void VmcReceiver::_process(float delta)
 
 	if(this->_oscUpdated)
 	{
-		std::lock_guard(this->_lockOscBuffer);
+		std::lock_guard lock(this->_lockOscBuffer);
 		this->_oscUpdated = false;
 
 		const auto &oscBuffer = this->_oscBuffers[!this->_udpRecBuffer];
@@ -65,9 +65,10 @@ void VmcReceiver::SetAddr(godot::String addr)
 {
 	const auto *pAddr = addr.ascii().get_data();
 	if(this->_address != pAddr)
+	{
 		this->ChangeEndpoint(pAddr, this->_port);
-
-	this->_address = pAddr;
+		this->_address = pAddr;
+	}
 }
 
 godot::String VmcReceiver::GetAddr()
@@ -78,9 +79,10 @@ godot::String VmcReceiver::GetAddr()
 void VmcReceiver::SetPort(uint16_t port)
 {
 	if(port != this->_port)
+	{
 		this->ChangeEndpoint(this->_address, port);
-
-	this->_port = port;
+		this->_port = port;
+	}
 }
 
 uint16_t VmcReceiver::GetPort()
@@ -110,7 +112,7 @@ void VmcReceiver::UDPThread()
 		const auto size = this->_udpSocket->ReceiveFrom(this->_endpoint, curBuffer.data(), curBuffer.size());
 		if(size > 0)
 		{
-			std::lock_guard(this->_lockOscBuffer);
+			std::lock_guard lock(this->_lockOscBuffer);
 
 			this->_oscPacketSize[this->_udpRecBuffer] = size;
 
@@ -124,7 +126,7 @@ void VmcReceiver::UDPThread()
 
 void VmcReceiver::StartUDPServerThread()
 {
-	std::lock_guard(this->_lockOscBuffer);
+	std::lock_guard lock(this->_lockOscBuffer);
 
 	this->_oscUpdated = false;
 

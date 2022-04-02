@@ -7,7 +7,7 @@ reloadable=true
 
 [entry]
 
-X11.64="res://VMCLib/build/libVMC_Godot.so"
+X11.64="res://VMCLib/bin/libVMCGodot.so"
 
 [dependencies]
 
