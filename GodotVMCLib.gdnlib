@@ -9,7 +9,7 @@ reloadable=true
 
 Windows.64="res://addons/godot-vmc-lib/bin/win_64/libGodotVMCLib.dll"
 Windows.32="res://addons/godot-vmc-lib/bin/win_32/libGodotVMCLib.dll"
-X11.64="res://addons/godot-vmc-lib/bin/libGodotVMCLib.so"
+X11.64="res://addons/godot-vmc-lib/bin/lin_64/libGodotVMCLib.so"
 
 [dependencies]
 

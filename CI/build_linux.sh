@@ -3,10 +3,13 @@
 INSTALL_BASE_DIR="bin"
 CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release"
 
+mkdir -p "build"
+touch "build/.gdignore"
+
 BUILD_DIR="build/lin_64"
 mkdir -p $BUILD_DIR
 cmake -S . -B $BUILD_DIR $CMAKE_ARGS \
-	-DVMC_LIB_INSTALL_DIR="$PWD/$INSTALL_BASE_DIR/lin_64"
+	-DVMC_LIB_INSTALL_DIR="$PWD/$INSTALL_BASE_DIR/lin_64" \
         -GNinja
 
 cmake --build $BUILD_DIR
