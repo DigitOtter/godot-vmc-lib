@@ -189,9 +189,9 @@ godot::Variant VmcReceiver::ConvertOSCData(const osc::ReceivedMessage::const_ite
 	else if(data->IsFloat())
 		return data->AsFloatUnchecked();
 	else if(data->IsInt32())
-		return data->AsInt32Unchecked();
+		return (int32_t)data->AsInt32Unchecked();
 	else if(data->IsInt64())
-		return data->AsInt64Unchecked();
+		return (int64_t)data->AsInt64Unchecked();
 	else if(data->IsString())
 		return data->AsStringUnchecked();
 	else
