@@ -1,3 +1,5 @@
 CMakeLists.txt.*
 /build
-/bin
+
+/bin/*.a
+/bin/*.dll
