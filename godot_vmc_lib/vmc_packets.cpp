@@ -1,2 +1,2 @@
-#include "vmc_godot/vmc_packets.h"
+#include "vmc_packets.h"
 
