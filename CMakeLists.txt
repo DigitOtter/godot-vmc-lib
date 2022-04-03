@@ -1,5 +1,5 @@
-set(PROJECT_NAME "VMCGodot")
-set(HEADER_DIRECTORY "vmc_godot")
+set(PROJECT_NAME "GodotVMCLib")
+set(HEADER_DIRECTORY "godot_vmc_lib")
 
 set(NAMESPACE_NAME "${PROJECT_NAME}")
 
@@ -39,9 +39,9 @@ add_subdirectory(third_party/oscpack)
 ##########################################
 ## Library
 set(LIB_SRC_FILES
-	vmc_godot/vmc_godot.cpp
-	vmc_godot/vmc_receiver.cpp
-	vmc_godot/vmc_packets.cpp
+	godot_vmc_lib/vmc_godot.cpp
+	godot_vmc_lib/vmc_receiver.cpp
+	godot_vmc_lib/vmc_packets.cpp
 )
 
 add_library("${LIBRARY_NAME}" SHARED ${LIB_SRC_FILES})
