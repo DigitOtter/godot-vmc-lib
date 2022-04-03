@@ -13,6 +13,6 @@ X11.64="res://addons/godot-vmc-lib/bin/lin_64/libGodotVMCLib.so"
 
 [dependencies]
 
-Windows.64=[ "res://addons/godot-vmc-lib/bin/libgodot-cpp.windows.release.64.dll" ]
-Windows.32=[ "res://addons/godot-vmc-lib/bin/libgodot-cpp.windows.release.32.dll" ]
+Windows.64=[ ]
+Windows.32=[ ]
 X11.64=[  ]

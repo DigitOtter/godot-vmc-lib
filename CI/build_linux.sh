@@ -32,6 +32,9 @@ x86_64-w64-mingw32-cmake -S . -B $BUILD_DIR $CMAKE_ARGS \
 cmake --build $BUILD_DIR
 cmake --install $BUILD_DIR
 
+mv "$PWD/$INSTALL_BASE_DIR/libgodot-cpp.windows.release.64.dll" "$PWD/$INSTALL_BASE_DIR/win_64/"
+
+
 BUILD_DIR="build/win_32"
 mkdir -p $BUILD_DIR
 i686-w64-mingw32-cmake -S . -B $BUILD_DIR $CMAKE_ARGS \
@@ -39,4 +42,6 @@ i686-w64-mingw32-cmake -S . -B $BUILD_DIR $CMAKE_ARGS \
 
 cmake --build $BUILD_DIR
 cmake --install $BUILD_DIR
+
+mv "$PWD/$INSTALL_BASE_DIR/libgodot-cpp.windows.release.32.dll" "$PWD/$INSTALL_BASE_DIR/win_32/"
 

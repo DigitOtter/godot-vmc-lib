@@ -23,6 +23,9 @@ set(VMC_LIB_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin" CACHE PATH "Install di
 set (CMAKE_CXX_STANDARD 20)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+if(MINGW)
+	string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static -static-libgcc -static-libstdc++ -Wl,-allow-multiple-definition ")
+endif()
 
 ########################################
 ## Godot C++ Headers
