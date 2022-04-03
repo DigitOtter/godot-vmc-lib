@@ -7,12 +7,12 @@ reloadable=true
 
 [entry]
 
-Windows.64="res://addons/VMCLib/bin/win_64/libVMCGodot.dll"
-Windows.32="res://addons/VMCLib/bin/win_32/libVMCGodot.dll"
-X11.64="res://addons/VMCLib/bin/libVMCGodot.so"
+Windows.64="res://addons/godot-vmc-lib/bin/win_64/libGodotVMCLib.dll"
+Windows.32="res://addons/godot-vmc-lib/bin/win_32/libGodotVMCLib.dll"
+X11.64="res://addons/godot-vmc-lib/bin/libGodotVMCLib.so"
 
 [dependencies]
 
-Windows.64=[ "res://addons/VMCLib/bin/libgodot-cpp.windows.release.64.dll" ]
-Windows.32=[ "res://addons/VMCLib/bin/libgodot-cpp.windows.release.32.dll" ]
+Windows.64=[ "res://addons/godot-vmc-lib/bin/libgodot-cpp.windows.release.64.dll" ]
+Windows.32=[ "res://addons/godot-vmc-lib/bin/libgodot-cpp.windows.release.32.dll" ]
 X11.64=[  ]
