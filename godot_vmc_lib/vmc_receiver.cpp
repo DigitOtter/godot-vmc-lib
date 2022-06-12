@@ -21,14 +21,11 @@ void VmcReceiver::_register_methods()
 	godot::register_property("root_poses", &VmcReceiver::_godotRootPoses, godot::Dictionary());
 	godot::register_property("camera_pose", &VmcReceiver::_godotCameraPose, godot::Transform());
 	godot::register_property("other_data", &VmcReceiver::_godotOtherData, godot::Dictionary());
-
-	godot::register_property("godot_time", &VmcReceiver::_godotElapsedTime, 0.f);
 }
 
 void VmcReceiver::_init()
 {
 	this->_godotOtherData.clear();
-	this->_godotElapsedTime = 0.f;
 	this->_godotVmcTime = std::numeric_limits<float>::min();
 	this->_godotBlendShapes.clear();
 	this->_godotNewBlendShapes.clear();
@@ -41,10 +38,8 @@ void VmcReceiver::_init()
 	this->ChangeEndpoint(this->_address, this->_port);
 }
 
-void VmcReceiver::_process(float delta)
+void VmcReceiver::_process(float /*delta*/)
 {
-	this->_godotElapsedTime += delta;
-
 	if(this->_oscUpdated)
 	{
 		std::lock_guard lock(this->_lockOscBuffer);

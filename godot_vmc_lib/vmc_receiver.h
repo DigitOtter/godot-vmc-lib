@@ -30,7 +30,6 @@ class VmcReceiver
 		void _process(float delta);
 
 	private:
-		float			  _godotElapsedTime;
 		float             _godotVmcTime;
 		godot::Dictionary _godotBlendShapes;
 		godot::Dictionary _godotBonePoses;
@@ -47,6 +46,8 @@ class VmcReceiver
 
 		std::mutex  _lockOscBuffer;
 		bool		_oscUpdated = false;
+
+		// Use 2 alternating osc buffers for receive. Prevents packet skip
 		bool		_udpRecBuffer = 0;
 		using osc_buffer_t = std::array<char, OSC_BUFFER_SIZE>;
 		std::array<osc_buffer_t, 2> _oscBuffers;
@@ -70,7 +71,7 @@ class VmcReceiver
 		void StartUDPServerThread();
 		void StopUDPServerThread();
 
-		// Porcess received osc messages
+		// Process received osc messages
 		void ProcessOSCBundle(const osc::ReceivedBundle &bundle);
 		void ProcessOSCMessage(const osc::ReceivedMessage &msg);
 
