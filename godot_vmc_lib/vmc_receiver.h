@@ -1,9 +1,9 @@
 #ifndef VMC_RECEIVER_H
 #define VMC_RECEIVER_H
 
-#include <Godot.hpp>
-#include <Dictionary.hpp>
-#include <Resource.hpp>
+#include <godot_cpp/classes/node.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/transform3d.hpp>
 #include <future>
 #include <ip/UdpSocket.h>
 #include <functional>
@@ -13,35 +13,36 @@
 
 
 class VmcReceiver
-        : public godot::Resource
+        : public godot::Node
 {
 		static constexpr std::string_view DEFAULT_ADDRESS = "localhost";
 		static constexpr uint16_t DEFAULT_PORT = 39539;
 
 		static constexpr uint32_t OSC_BUFFER_SIZE = 8192;
 
-	public: GODOT_CLASS(VmcReceiver, godot::Resource)
+	GDCLASS(VmcReceiver, godot::Node);
+
 	public:
 		VmcReceiver() = default;
 		~VmcReceiver();
 
-		static void _register_methods();
+		static void _bind_methods();
 		void _init();
-		void _process(float delta);
+		void _process(double delta) override;
 
 	private:
-		float             _godotVmcTime;
-		godot::Dictionary _godotBlendShapes;
-		godot::Dictionary _godotBonePoses;
-		godot::Dictionary _godotRootPoses;
-		godot::Transform  _godotCameraPose;
-		godot::Dictionary _godotOtherData;
+		float              _godotVmcTime;
+		godot::Dictionary  _godotBlendShapes;
+		godot::Dictionary  _godotBonePoses;
+		godot::Dictionary  _godotRootPoses;
+		godot::Transform3D _godotCameraPose;
+		godot::Dictionary  _godotOtherData;
 
 		// New Blend shapes. Apply after receiving BLEND_SHAPES_APPLY
 		godot::Dictionary _godotNewBlendShapes;
 
-		std::string    _address;
-		uint16_t       _port;
+		std::string    _address = DEFAULT_ADDRESS.data();
+		uint16_t       _port = DEFAULT_PORT;
 		IpEndpointName _endpoint;
 
 		std::mutex  _lockOscBuffer;
@@ -56,6 +57,35 @@ class VmcReceiver
 		std::unique_ptr<UdpSocket> _udpSocket;
 		std::future<void> _udpThread;
 		volatile bool _udpThreadBreak = false;
+
+		// Godot Interface for _vmc_time
+		void  SetVmcTime(float vmc_time)	{	this->_godotVmcTime = vmc_time;	};
+		float GetVmcTime() const			{	return this->_godotVmcTime;	};
+
+		// Godot Interface for _blend_shapes
+		void  SetBlendShapes(godot::Dictionary blend_shapes)	{	this->_godotBlendShapes = blend_shapes;	};
+		godot::Dictionary GetBlendShapes() const				{	return this->_godotBlendShapes;	};
+
+		// Godot Interface for _bone_poses
+		void  SetBonePoses(godot::Dictionary bone_poses)	{	this->_godotBonePoses = bone_poses;	};
+		godot::Dictionary GetBonePoses() const				{	return this->_godotBonePoses;	};
+
+		// Godot Interface for _root_poses
+		void  SetRootPoses(godot::Dictionary root_poses)	{	this->_godotRootPoses = root_poses;	};
+		godot::Dictionary GetRootPoses() const				{	return this->_godotRootPoses;	};
+
+		// Godot Interface for _camera_pose
+		void  SetCameraPose(godot::Transform3D camera_pose)	{	this->_godotCameraPose = camera_pose;	};
+		godot::Transform3D GetCameraPose() const			{	return this->_godotCameraPose;	};
+
+		// Godot Interface for _other_data
+		void  SetOtherData(godot::Dictionary other_data)	{	this->_godotOtherData = other_data;	};
+		godot::Dictionary GetOtherData() const				{	return this->_godotOtherData;	};
+
+		// Godot Interface for _other_data
+		void GodotSetPort(int port)	{	this->_port = port;	};
+		int GodotGetPort() const	{	return this->_port;	};
+
 
 		// Godot Interface for _address
 		void SetAddr(godot::String addr);

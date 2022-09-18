@@ -1,18 +1,31 @@
+#include "vmc_godot.h"
+
 #include "vmc_receiver.h"
 
-extern "C" void GDN_EXPORT godot_gdnative_init(godot_gdnative_init_options* o)
+
+using namespace godot;
+
+void initialize_vmc_godot(ModuleInitializationLevel p_level)
 {
-	godot::Godot::gdnative_init(o);
+	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
+		return;
+
+	ClassDB::register_class<VmcReceiver>();
 }
 
-extern "C" void GDN_EXPORT godot_gdnative_terminate(godot_gdnative_terminate_options* o)
+void uninitialize_vmc_godot(ModuleInitializationLevel p_level)
 {
-	godot::Godot::gdnative_terminate(o);
+	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
+		return;
 }
 
-extern "C" void GDN_EXPORT godot_nativescript_init(void* handle)
+extern "C" GDNativeBool GDN_EXPORT vmc_godot_library_init(const GDNativeInterface *p_interface, const GDNativeExtensionClassLibraryPtr p_library, GDNativeInitialization *r_initialization)
 {
-	godot::Godot::nativescript_init(handle);
+	godot::GDExtensionBinding::InitObject init_obj(p_interface, p_library, r_initialization);
 
-	godot::register_class<VmcReceiver>();
+	init_obj.register_initializer(initialize_vmc_godot);
+	init_obj.register_terminator(uninitialize_vmc_godot);
+	init_obj.set_minimum_library_initialization_level(MODULE_INITIALIZATION_LEVEL_SCENE);
+
+	return init_obj.init();
 }

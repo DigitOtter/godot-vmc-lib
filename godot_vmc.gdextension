@@ -1,0 +1,8 @@
+[configuration]
+
+entry_symbol = "vmc_godot_library_init"
+
+[libraries]
+
+linux.debug.x86_64 = "res://addons/godot-vmc-lib/bin/libGodotVMCLib.so"
+linux.release.x86_64 = "res://addons/godot-vmc-lib/bin/libGodotVMCLib.so"

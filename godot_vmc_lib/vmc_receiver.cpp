@@ -1,26 +1,62 @@
 #include "vmc_receiver.h"
 
 #include <osc/OscOutboundPacketStream.h>
+#include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/classes/wrapped.hpp>
+#include <godot_cpp/core/error_macros.hpp>
+
+
+using namespace godot;
 
 VmcReceiver::~VmcReceiver()
 {
 	this->StopUDPServerThread();
 }
 
-void VmcReceiver::_register_methods()
+void VmcReceiver::_bind_methods()
 {
-	godot::register_method("_process", &VmcReceiver::_process);
+	godot::ClassDB::bind_method(godot::D_METHOD("_init"), &VmcReceiver::_init);
+	godot::ClassDB::bind_method(godot::D_METHOD("_process", "time"), &VmcReceiver::_process);
 
-	godot::register_property("address", &VmcReceiver::SetAddr, &VmcReceiver::GetAddr, godot::String(DEFAULT_ADDRESS.data()));
-	godot::register_property("port", &VmcReceiver::SetPort, &VmcReceiver::GetPort, DEFAULT_PORT);
+	// address Property
+	godot::ClassDB::bind_method(godot::D_METHOD("_set_addr", "addr"), &VmcReceiver::SetAddr);
+	godot::ClassDB::bind_method(godot::D_METHOD("_get_addr"), &VmcReceiver::GetAddr);
+	ADD_PROPERTY(godot::PropertyInfo(godot::Variant::STRING, "address"), "_set_addr", "_get_addr");
 
-	godot::register_property("vmc_time", &VmcReceiver::_godotVmcTime, -0.f);
-	godot::register_property("blend_shapes", &VmcReceiver::_godotBlendShapes, godot::Dictionary());
-	godot::register_property("new_blend_shapes", &VmcReceiver::_godotNewBlendShapes, godot::Dictionary());
-	godot::register_property("bone_poses", &VmcReceiver::_godotBonePoses, godot::Dictionary());
-	godot::register_property("root_poses", &VmcReceiver::_godotRootPoses, godot::Dictionary());
-	godot::register_property("camera_pose", &VmcReceiver::_godotCameraPose, godot::Transform());
-	godot::register_property("other_data", &VmcReceiver::_godotOtherData, godot::Dictionary());
+	// port Property
+	godot::ClassDB::bind_method(godot::D_METHOD("_set_port", "port"), &VmcReceiver::GodotSetPort);
+	godot::ClassDB::bind_method(godot::D_METHOD("_get_port"), &VmcReceiver::GodotGetPort);
+	ADD_PROPERTY(godot::PropertyInfo(godot::Variant::INT, "port"), "_set_port", "_get_port");
+
+	// vmc_time Property
+	godot::ClassDB::bind_method(godot::D_METHOD("_set_vmc_time", "vmc_time"), &VmcReceiver::SetVmcTime);
+	godot::ClassDB::bind_method(godot::D_METHOD("_get_vmc_time"), &VmcReceiver::GetVmcTime);
+	ADD_PROPERTY(godot::PropertyInfo(godot::Variant::FLOAT, "vmc_time"), "_set_vmc_time", "_get_vmc_time");
+
+	// blend_shapes Property
+	godot::ClassDB::bind_method(godot::D_METHOD("_set_blend_shapes", "blend_shapes"), &VmcReceiver::SetBlendShapes);
+	godot::ClassDB::bind_method(godot::D_METHOD("_get_blend_shapes"), &VmcReceiver::GetBlendShapes);
+	ADD_PROPERTY(godot::PropertyInfo(godot::Variant::DICTIONARY, "blend_shapes"), "_set_blend_shapes", "_get_blend_shapes");
+
+	// bone_poses Property
+	godot::ClassDB::bind_method(godot::D_METHOD("_set_bone_poses", "bone_poses"), &VmcReceiver::SetBonePoses);
+	godot::ClassDB::bind_method(godot::D_METHOD("_get_bone_poses"), &VmcReceiver::GetBonePoses);
+	ADD_PROPERTY(godot::PropertyInfo(godot::Variant::DICTIONARY, "bone_poses"), "_set_bone_poses", "_get_bone_poses");
+
+	// root_poses Property
+	godot::ClassDB::bind_method(godot::D_METHOD("_set_root_poses", "root_poses"), &VmcReceiver::SetRootPoses);
+	godot::ClassDB::bind_method(godot::D_METHOD("_get_root_poses"), &VmcReceiver::GetRootPoses);
+	ADD_PROPERTY(godot::PropertyInfo(godot::Variant::DICTIONARY, "root_poses"), "_set_root_poses", "_get_root_poses");
+
+	// camera_pose Property
+	godot::ClassDB::bind_method(godot::D_METHOD("_set_camera_pose", "camera_pose"), &VmcReceiver::SetCameraPose);
+	godot::ClassDB::bind_method(godot::D_METHOD("_get_camera_pose"), &VmcReceiver::GetCameraPose);
+	ADD_PROPERTY(godot::PropertyInfo(godot::Variant::TRANSFORM3D, "camera_pose"), "_set_camera_pose", "_get_camera_pose");
+
+	// other_data Property
+	godot::ClassDB::bind_method(godot::D_METHOD("_set_other_data", "other_data"), &VmcReceiver::SetOtherData);
+	godot::ClassDB::bind_method(godot::D_METHOD("_get_other_data"), &VmcReceiver::GetOtherData);
+	ADD_PROPERTY(godot::PropertyInfo(godot::Variant::DICTIONARY, "other_data"), "_set_other_data", "_get_other_data");
 }
 
 void VmcReceiver::_init()
@@ -31,14 +67,15 @@ void VmcReceiver::_init()
 	this->_godotNewBlendShapes.clear();
 	this->_godotBonePoses.clear();
 	this->_godotRootPoses.clear();
-	this->_godotCameraPose = godot::Transform::IDENTITY;
+	this->_godotCameraPose = godot::Transform3D();
+	this->_godotCameraPose.set_origin(godot::Vector3(0,0,0));
 
 	this->_address = DEFAULT_ADDRESS.data();
 	this->_port = DEFAULT_PORT;
 	this->ChangeEndpoint(this->_address, this->_port);
 }
 
-void VmcReceiver::_process(float /*delta*/)
+void VmcReceiver::_process(double /*delta*/)
 {
 	if(this->_oscUpdated)
 	{
@@ -192,7 +229,7 @@ godot::Variant VmcReceiver::ConvertOSCData(const osc::ReceivedMessage::const_ite
 	else
 	{
 		const auto msg = std::string("Unknown osc data type '") + data->TypeTag() + "'";
-		godot::Godot::print(msg.data());
+		WARN_PRINT(msg.data());
 
 		return godot::Variant();
 	}
@@ -256,13 +293,13 @@ void VmcReceiver::ProcessVMCBonePos(const osc::ReceivedMessage &msg)
 	pos.z = (++msgIt)->AsFloat();
 
 	//const godot::Quat rot((++msgIt)->AsFloat(), (++msgIt)->AsFloat(), (++msgIt)->AsFloat(), (++msgIt)->AsFloat());
-	godot::Quat rot;
+	godot::Quaternion rot;
 	rot.x = (++msgIt)->AsFloat();
 	rot.y = (++msgIt)->AsFloat();
 	rot.z = (++msgIt)->AsFloat();
 	rot.w = (++msgIt)->AsFloat();
 
-	this->_godotBonePoses[name] = godot::Transform(godot::Basis(rot), pos);
+	this->_godotBonePoses[name] = godot::Transform3D(godot::Basis(rot), pos);
 }
 
 void VmcReceiver::ProcessVMCRootPose(const osc::ReceivedMessage &msg)
@@ -279,13 +316,13 @@ void VmcReceiver::ProcessVMCRootPose(const osc::ReceivedMessage &msg)
 	pos.z = (++msgIt)->AsFloat();
 
 	//const godot::Quat rot((++msgIt)->AsFloat(), (++msgIt)->AsFloat(), (++msgIt)->AsFloat(), (++msgIt)->AsFloat());
-	godot::Quat rot;
+	godot::Quaternion rot;
 	rot.x = (++msgIt)->AsFloat();
 	rot.y = (++msgIt)->AsFloat();
 	rot.z = (++msgIt)->AsFloat();
 	rot.w = (++msgIt)->AsFloat();
 
-	this->_godotRootPoses[name] = godot::Transform(godot::Basis(rot), pos);
+	this->_godotRootPoses[name] = godot::Transform3D(godot::Basis(rot), pos);
 }
 
 void VmcReceiver::ProcessVMCCameraPose(const osc::ReceivedMessage &msg)
@@ -301,7 +338,7 @@ void VmcReceiver::ProcessVMCCameraPose(const osc::ReceivedMessage &msg)
 	pos.z = (++msgIt)->AsFloat();
 
 	//const godot::Quat rot((++msgIt)->AsFloat(), (++msgIt)->AsFloat(), (++msgIt)->AsFloat(), (++msgIt)->AsFloat());
-	godot::Quat rot;
+	godot::Quaternion rot;
 	rot.x = (++msgIt)->AsFloat();
 	rot.y = (++msgIt)->AsFloat();
 	rot.z = (++msgIt)->AsFloat();
