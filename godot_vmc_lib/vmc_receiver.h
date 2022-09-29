@@ -27,7 +27,7 @@ class VmcReceiver
 		~VmcReceiver();
 
 		static void _bind_methods();
-		void _init();
+		void _ready() override;
 		void _process(double delta) override;
 
 	private:

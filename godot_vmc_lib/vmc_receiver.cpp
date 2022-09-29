@@ -2,6 +2,7 @@
 
 #include <osc/OscOutboundPacketStream.h>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/wrapped.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 
@@ -15,9 +16,6 @@ VmcReceiver::~VmcReceiver()
 
 void VmcReceiver::_bind_methods()
 {
-	godot::ClassDB::bind_method(godot::D_METHOD("_init"), &VmcReceiver::_init);
-	godot::ClassDB::bind_method(godot::D_METHOD("_process", "time"), &VmcReceiver::_process);
-
 	// address Property
 	godot::ClassDB::bind_method(godot::D_METHOD("_set_addr", "addr"), &VmcReceiver::SetAddr);
 	godot::ClassDB::bind_method(godot::D_METHOD("_get_addr"), &VmcReceiver::GetAddr);
@@ -59,7 +57,7 @@ void VmcReceiver::_bind_methods()
 	ADD_PROPERTY(godot::PropertyInfo(godot::Variant::DICTIONARY, "other_data"), "_set_other_data", "_get_other_data");
 }
 
-void VmcReceiver::_init()
+void VmcReceiver::_ready()
 {
 	this->_godotOtherData.clear();
 	this->_godotVmcTime = std::numeric_limits<float>::min();
@@ -72,7 +70,8 @@ void VmcReceiver::_init()
 
 	this->_address = DEFAULT_ADDRESS.data();
 	this->_port = DEFAULT_PORT;
-	this->ChangeEndpoint(this->_address, this->_port);
+	if(!godot::Engine::get_singleton()->is_editor_hint())
+		this->ChangeEndpoint(this->_address, this->_port);
 }
 
 void VmcReceiver::_process(double /*delta*/)
