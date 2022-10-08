@@ -68,10 +68,9 @@ void VmcReceiver::_ready()
 	this->_godotCameraPose = godot::Transform3D();
 	this->_godotCameraPose.set_origin(godot::Vector3(0,0,0));
 
-	this->_address = DEFAULT_ADDRESS.data();
-	this->_port = DEFAULT_PORT;
-	if(!godot::Engine::get_singleton()->is_editor_hint())
-		this->ChangeEndpoint(this->_address, this->_port);
+//	this->_address = DEFAULT_ADDRESS.data();
+//	this->_port = DEFAULT_PORT;
+	this->ChangeEndpoint(this->_address, this->_port);
 }
 
 void VmcReceiver::_process(double /*delta*/)
@@ -94,11 +93,11 @@ void VmcReceiver::_process(double /*delta*/)
 
 void VmcReceiver::SetAddr(godot::String addr)
 {
-	const auto *pAddr = addr.ascii().get_data();
-	if(this->_address != pAddr)
+	const std::string ascii_addr = addr.ascii().get_data();
+	if(this->_address != ascii_addr)
 	{
-		this->ChangeEndpoint(pAddr, this->_port);
-		this->_address = pAddr;
+		this->ChangeEndpoint(ascii_addr, this->_port);
+		this->_address = ascii_addr;
 	}
 }
 
@@ -116,7 +115,7 @@ void VmcReceiver::SetPort(uint16_t port)
 	}
 }
 
-uint16_t VmcReceiver::GetPort()
+uint16_t VmcReceiver::GetPort() const
 {
 	return this->_port;
 }
@@ -128,7 +127,21 @@ void VmcReceiver::ChangeEndpoint(const std::string &ip, uint16_t port)
 	this->_udpSocket.reset(new UdpSocket());
 
 	this->_endpoint = IpEndpointName(ip.data(), port);
-	this->_udpSocket->Bind(this->_endpoint);
+
+	// Skip binding if node is running in editor
+	if(godot::Engine::get_singleton()->is_editor_hint())
+		return;
+
+	try
+	{
+		this->_udpSocket->Bind(this->_endpoint);
+	}
+	catch(const std::runtime_error &)
+	{
+		const std::string err_msg = "Failed to bind to: " + ip + ":" + std::to_string(port);
+		WARN_PRINT(err_msg.data());
+		return;		// Skip server start
+	}
 
 	this->StartUDPServerThread();
 }

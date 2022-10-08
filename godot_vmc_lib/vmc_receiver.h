@@ -9,6 +9,8 @@
 #include <functional>
 #include <osc/OscReceivedElements.h>
 
+#include <string_view>
+
 #include "vmc_packets.h"
 
 
@@ -82,18 +84,16 @@ class VmcReceiver
 		void  SetOtherData(godot::Dictionary other_data)	{	this->_godotOtherData = other_data;	};
 		godot::Dictionary GetOtherData() const				{	return this->_godotOtherData;	};
 
-		// Godot Interface for _other_data
-		void GodotSetPort(int port)	{	this->_port = port;	};
-		int GodotGetPort() const	{	return this->_port;	};
-
+		// Godot Interface for _port
+		void GodotSetPort(int port)	{	this->SetPort(port);	};
+		int GodotGetPort() const	{	return this->GetPort();	};
 
 		// Godot Interface for _address
 		void SetAddr(godot::String addr);
 		godot::String GetAddr();
 
-		// Godot Interface for _port
 		void SetPort(uint16_t port);
-		uint16_t GetPort();
+		uint16_t GetPort() const;
 
 		// OSC Network Receiver
 		void ChangeEndpoint(const std::string &ip, uint16_t port);
