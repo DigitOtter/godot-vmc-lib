@@ -1,0 +1,10 @@
+[configuration]
+
+entry_symbol = "vmc_godot_library_init"
+compatibility_minimum = 4.1
+
+[libraries]
+
+linux.x86_64 = "@GD_RES_PATH@/@INSTALL_FILENAME@.so"
+windows.release.x86_64 = "@GD_RES_PATH@/@INSTALL_FILENAME@.dll"
+

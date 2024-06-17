@@ -1,37 +1,33 @@
 set(PROJECT_NAME "GodotVMCLib")
-set(HEADER_DIRECTORY "godot_vmc_lib")
-
 set(NAMESPACE_NAME "${PROJECT_NAME}")
 
-set(LIBRARY_NAME "${PROJECT_NAME}")
-set(EXECUTABLE_NAME "${PROJECT_NAME}Exec")
-set(TEST_NAME "${PROJECT_NAME}Tests")
+set(GODOT_LIB_NAME "${PROJECT_NAME}")
+set(GODOT_DIR_NAME "godot-vmc-lib")
 
-set(LIB_EXPORT_NAME "${LIBRARY_NAME}Targets")
-set(LIB_CONFIG_NAME "${LIBRARY_NAME}Config")
-set(LIB_VERSION_NAME "${LIB_CONFIG_NAME}Version")
-
+set(CMAKE_INSTALL_PREFIX
+    "${CMAKE_CURRENT_SOURCE_DIR}/bin"
+    CACHE PATH "Library install location")
+set(INSTALL_FILENAME
+    "${GODOT_LIB_NAME}"
+    CACHE STRING "Library name")
+set(GD_RES_PATH
+    "res://addons/${GODOT_DIR_NAME}/bin"
+    CACHE STRING "Godot resource path")
 
 cmake_minimum_required(VERSION 3.18)
 project("${PROJECT_NAME}" VERSION 1.0.0)
 
-include(GNUInstallDirs)
-
-option(ARCHITECTURE "x64 or x86 CPU Architecture" "x64")
-set(VMC_LIB_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin" CACHE PATH "Install directory for generated lib")
-
-set (CMAKE_CXX_STANDARD 20)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-if(MINGW)
-	string(APPEND CMAKE_SHARED_LINKER_FLAGS " -static -static-libgcc -static-libstdc++ -Wl,-allow-multiple-definition ")
-endif()
 
 ########################################
 ## Godot C++ Headers
 add_subdirectory("third_party/godot-cpp")
 add_library(GodotCpp::GodotCpp ALIAS godot-cpp)
 
+########################################
+## GdExtension
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/gd_library_data.gdextension.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${GODOT_DIR_NAME}.gdextension.in" @ONLY)
 
 ########################################
 ## OSCPack library
@@ -47,33 +43,39 @@ set(LIB_SRC_FILES
 	godot_vmc_lib/vmc_packets.cpp
 )
 
-add_library("${LIBRARY_NAME}" SHARED ${LIB_SRC_FILES})
-add_library("${NAMESPACE_NAME}::${LIBRARY_NAME}" ALIAS ${LIBRARY_NAME})
-target_compile_options(${LIBRARY_NAME} PUBLIC $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:-Wall -Wextra>)
+add_library("${GODOT_LIB_NAME}" SHARED ${LIB_SRC_FILES})
+add_library("${NAMESPACE_NAME}::${GODOT_LIB_NAME}" ALIAS ${GODOT_LIB_NAME})
+target_compile_options(
+    ${GODOT_LIB_NAME}
+    PUBLIC $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:-Wall
+           -Wextra>)
+set_target_properties(
+    ${GODOT_LIB_NAME} PROPERTIES LIBRARY_OUTPUT_NAME "${INSTALL_FILENAME}"
+                                 PREFIX "")
 
-target_include_directories(${LIBRARY_NAME}
+target_include_directories(${GODOT_LIB_NAME}
 	PUBLIC
 	PRIVATE
 		"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 		"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
 )
 
-target_link_libraries(${LIBRARY_NAME}
+target_link_libraries(${GODOT_LIB_NAME}
 	PUBLIC
 	PRIVATE
 		OSCPack::OSCPack
 		GodotCpp::GodotCpp
 )
 
-if(WIN32)
-	set(INSTALL_CTRL
-		RUNTIME DESTINATION ${VMC_LIB_INSTALL_DIR})
-else()
-	set(INSTALL_CTRL
-		LIBRARY DESTINATION ${VMC_LIB_INSTALL_DIR})
-endif()
 
-install(TARGETS ${LIBRARY_NAME}
-		EXPORT ${LIB_EXPORT_NAME}
-		${INSTALL_CTRL}
-)
+# ##############################################################################
+# Install
+install(
+    TARGETS ${GODOT_LIB_NAME}
+    LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}"
+    RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}")
+
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/${GODOT_DIR_NAME}.gdextension.in"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}"
+    RENAME "${GODOT_DIR_NAME}.gdextension")
