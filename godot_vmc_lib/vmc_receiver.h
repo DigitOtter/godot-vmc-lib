@@ -20,7 +20,7 @@ class VmcReceiver
 		static constexpr std::string_view DEFAULT_ADDRESS = "localhost";
 		static constexpr uint16_t DEFAULT_PORT = 39539;
 
-		static constexpr uint32_t OSC_BUFFER_SIZE = 8192;
+		static constexpr uint32_t OSC_BUFFER_SIZE = 16384;
 
 	GDCLASS(VmcReceiver, godot::Node);
 
